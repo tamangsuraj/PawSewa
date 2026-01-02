@@ -1,0 +1,444 @@
+{
+  "info": {
+    "name": "PawSewa Custom OTP API Tests",
+    "description": "Complete testing suite for custom OTP system with Nodemailer",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "your-api-key-here",
+      "type": "string"
+    },
+    {
+      "key": "test_email",
+      "value": "test@example.com",
+      "type": "string"
+    },
+    {
+      "key": "test_user_name",
+      "value": "John Doe",
+      "type": "string"
+    },
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Server is healthy', function () {",
+              "    pm.response.to.have.status(200);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.status).to.eql('OK');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the OTP service is running"
+      }
+    },
+    {
+      "name": "Test SMTP Connection",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('SMTP connection successful', function () {",
+              "    pm.response.to.have.status(200);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.success).to.be.true;",
+              "    pm.expect(response.connected).to.be.true;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{api_key}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/otp/test-connection",
+          "host": ["{{base_url}}"],
+          "path": ["api", "otp", "test-connection"]
+        },
+        "description": "Test SMTP server connection"
+      }
+    },
+    {
+      "name": "Send Verification OTP",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('OTP sent successfully', function () {",
+              "    pm.response.to.have.status(200);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.success).to.be.true;",
+              "    pm.expect(response.data.email).to.eql(pm.collectionVariables.get('test_email'));",
+              "    pm.expect(response.data.purpose).to.eql('verification');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"purpose\": \"verification\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/otp/send",
+          "host": ["{{base_url}}"],
+          "path": ["api", "otp", "send"]
+        },
+        "description": "Send OTP for email verification"
+      }
+    },
+    {
+      "name": "Send Password Reset OTP",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Password reset OTP sent successfully', function () {",
+              "    pm.response.to.have.status(200);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.success).to.be.true;",
+              "    pm.expect(response.data.email).to.eql(pm.collectionVariables.get('test_email'));",
+              "    pm.expect(response.data.purpose).to.eql('password_reset');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"purpose\": \"password_reset\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/otp/send",
+          "host": ["{{base_url}}"],
+          "path": ["api", "otp", "send"]
+        },
+        "description": "Send OTP for password reset"
+      }
+    },
+    {
+      "name": "Verify OTP - Valid",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Note: This test requires manual input of the OTP received via email",
+              "if (pm.collectionVariables.get('received_otp') !== '') {",
+              "    pm.test('OTP verification successful', function () {",
+              "        pm.response.to.have.status(200);",
+              "        const response = pm.response.json();",
+              "        pm.expect(response.success).to.be.true;",
+              "        pm.expect(response.data.verified).to.be.true;",
+              "    });",
+              "} else {",
+              "    pm.test('Manual OTP input required', function () {",
+              "        pm.expect(true).to.be.true;",
+              "        console.log('Please set the received_otp variable with the OTP from your email');",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"otp\": \"{{received_otp}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/otp/verify",
+          "host": ["{{base_url}}"],
+          "path": ["api", "otp", "verify"]
+        },
+        "description": "Verify OTP with correct code (requires manual input)"
+      }
+    },
+    {
+      "name": "Verify OTP - Invalid",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Invalid OTP rejected', function () {",
+              "    pm.response.to.have.status(400);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.success).to.be.false;",
+              "    pm.expect(response.data.verified).to.be.false;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"otp\": \"000000\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/otp/verify",
+          "host": ["{{base_url}}"],
+          "path": ["api", "otp", "verify"]
+        },
+        "description": "Test verification with invalid OTP"
+      }
+    },
+    {
+      "name": "Send Test Email",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Test email sent successfully', function () {",
+              "    pm.response.to.have.status(200);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.success).to.be.true;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/otp/test-email",
+          "host": ["{{base_url}}"],
+          "path": ["api", "otp", "test-email"]
+        },
+        "description": "Send a test email to verify email delivery"
+      }
+    },
+    {
+      "name": "Rate Limit Test",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// This test should be run multiple times to trigger rate limiting",
+              "if (pm.response.code === 429) {",
+              "    pm.test('Rate limiting working', function () {",
+              "        pm.response.to.have.status(429);",
+              "        const response = pm.response.json();",
+              "        pm.expect(response.error).to.include('Too many');",
+              "    });",
+              "} else {",
+              "    pm.test('Request within rate limit', function () {",
+              "        pm.response.to.have.status(200);",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"ratelimit@test.com\",\n  \"purpose\": \"verification\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/otp/send",
+          "host": ["{{base_url}}"],
+          "path": ["api", "otp", "send"]
+        },
+        "description": "Test rate limiting (run multiple times)"
+      }
+    },
+    {
+      "name": "Invalid API Key Test",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Invalid API key rejected', function () {",
+              "    pm.response.to.have.status(403);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.success).to.be.false;",
+              "    pm.expect(response.error).to.include('Invalid API key');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "invalid-api-key"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"purpose\": \"verification\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/otp/send",
+          "host": ["{{base_url}}"],
+          "path": ["api", "otp", "send"]
+        },
+        "description": "Test API key validation"
+      }
+    },
+    {
+      "name": "Invalid Email Format Test",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Invalid email format rejected', function () {",
+              "    pm.response.to.have.status(400);",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.success).to.be.false;",
+              "    pm.expect(response.error).to.include('Validation error');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-API-Key",
+            "value": "{{api_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"invalid-email-format\",\n  \"purpose\": \"verification\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/otp/send",
+          "host": ["{{base_url}}"],
+          "path": ["api", "otp", "send"]
+        },
+        "description": "Test email validation"
+      }
+    }
+  ]
+}

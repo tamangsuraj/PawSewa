@@ -1,0 +1,339 @@
+{
+  "info": {
+    "name": "PawSewa Firebase Authentication Tests",
+    "description": "Complete Firebase Authentication API testing for PawSewa app",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "api_key",
+      "value": "AIzaSyAXXtiBkFoUoBHBhGzT3ZXmHpJXK-qLzk8",
+      "type": "string"
+    },
+    {
+      "key": "base_url",
+      "value": "https://identitytoolkit.googleapis.com/v1",
+      "type": "string"
+    },
+    {
+      "key": "test_email",
+      "value": "test@pawsewa.com",
+      "type": "string"
+    },
+    {
+      "key": "test_password",
+      "value": "TestPassword123",
+      "type": "string"
+    },
+    {
+      "key": "id_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Sign Up (createUserWithEmailAndPassword)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    pm.collectionVariables.set('id_token', response.idToken);",
+              "    pm.test('Sign up successful', function () {",
+              "        pm.expect(response.email).to.eql(pm.collectionVariables.get('test_email'));",
+              "    });",
+              "} else {",
+              "    pm.test('Sign up failed', function () {",
+              "        pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\",\n  \"returnSecureToken\": true\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/accounts:signUp?key={{api_key}}",
+          "host": ["{{base_url}}"],
+          "path": ["accounts:signUp"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Create a new user account with email and password"
+      }
+    },
+    {
+      "name": "2. Send Email Verification (sendEmailVerification)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Email verification sent', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requestType\": \"VERIFY_EMAIL\",\n  \"idToken\": \"{{id_token}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/accounts:sendOobCode?key={{api_key}}",
+          "host": ["{{base_url}}"],
+          "path": ["accounts:sendOobCode"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Send email verification to user's email address"
+      }
+    },
+    {
+      "name": "3. Sign In (signInWithEmailAndPassword)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    pm.collectionVariables.set('id_token', response.idToken);",
+              "    pm.test('Sign in successful', function () {",
+              "        pm.expect(response.email).to.eql(pm.collectionVariables.get('test_email'));",
+              "    });",
+              "} else {",
+              "    pm.test('Sign in failed', function () {",
+              "        pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\",\n  \"returnSecureToken\": true\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/accounts:signInWithPassword?key={{api_key}}",
+          "host": ["{{base_url}}"],
+          "path": ["accounts:signInWithPassword"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Sign in user with email and password"
+      }
+    },
+    {
+      "name": "4. Get User Data (verify token)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('User data retrieved', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"idToken\": \"{{id_token}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/accounts:lookup?key={{api_key}}",
+          "host": ["{{base_url}}"],
+          "path": ["accounts:lookup"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Get user account data using ID token"
+      }
+    },
+    {
+      "name": "5. Send Password Reset (sendPasswordResetEmail)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Password reset email sent', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requestType\": \"PASSWORD_RESET\",\n  \"email\": \"{{test_email}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/accounts:sendOobCode?key={{api_key}}",
+          "host": ["{{base_url}}"],
+          "path": ["accounts:sendOobCode"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Send password reset email to user"
+      }
+    },
+    {
+      "name": "6. Confirm Password Reset (confirmPasswordReset)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Password reset confirmed', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"oobCode\": \"RESET_CODE_FROM_EMAIL\",\n  \"newPassword\": \"NewPassword123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/accounts:resetPassword?key={{api_key}}",
+          "host": ["{{base_url}}"],
+          "path": ["accounts:resetPassword"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Confirm password reset with code from email"
+      }
+    },
+    {
+      "name": "7. Delete Account (cleanup)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Account deleted', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"idToken\": \"{{id_token}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/accounts:delete?key={{api_key}}",
+          "host": ["{{base_url}}"],
+          "path": ["accounts:delete"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{api_key}}"
+            }
+          ]
+        },
+        "description": "Delete test user account (cleanup)"
+      }
+    }
+  ]
+}

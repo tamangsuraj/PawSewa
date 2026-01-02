@@ -1,7 +1,8 @@
 flutter_native_splash:
   color: "#FFFFFF"
-  color_dark: "#12100E"
-  image: assets/logo/paw_logo.png
-  image_dark: assets/logo/paw_logo.png
+  color_dark: "#FFFFFF"
+  # Remove image to make it minimal
+  # image: assets/logo/paw_logo.png
+  # image_dark: assets/logo/paw_logo.png
 
 web: false

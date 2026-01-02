@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'shop.dart';
+import 'auth_service.dart';
 
 import 'pet_hostel.dart';
 import 'services.dart';
@@ -84,10 +85,26 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     });
   }
 
+  void _signOut() async {
+    try {
+      await authService.signOut();
+      // Navigation will be handled automatically by AuthLayout
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to sign out: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           SafeArea(
@@ -180,10 +197,17 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 ),
                 onPressed: () {},
               ),
-              const CircleAvatar(
-                radius: 18,
-                backgroundColor: Colors.brown,
-                child: Icon(Icons.person, color: Colors.white, size: 20),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF7A4B3A),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.message_outlined,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
             ],
           ),
@@ -222,10 +246,17 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 ),
                 child: Row(
                   children: [
-                    const CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.brown,
-                      child: Icon(Icons.person, color: Colors.white, size: 30),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF7A4B3A),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.message_outlined,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -247,7 +278,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.brown.shade700,
+                              color: const Color(0xFF7A4B3A),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Text(
@@ -273,7 +304,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     _buildDrawerSection(
                       icon: Icons.shopping_bag_outlined,
                       title: 'Pet Supply Order',
-                      iconColor: Colors.brown,
+                      iconColor: const Color(0xFF7A4B3A),
                       subItems: [
                         _buildDrawerSubItem(Icons.home_outlined, 'Home'),
                         _buildDrawerSubItem(Icons.history, 'Order History'),
@@ -282,7 +313,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     _buildDrawerSection(
                       icon: Icons.calendar_today_outlined,
                       title: 'Appointments',
-                      iconColor: Colors.brown,
+                      iconColor: const Color(0xFF7A4B3A),
                       subItems: [
                         _buildDrawerSubItem(Icons.home_outlined, 'Home'),
                         _buildDrawerSubItem(
@@ -294,7 +325,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     _buildDrawerSection(
                       icon: Icons.hotel_outlined,
                       title: 'Pet Hostel',
-                      iconColor: Colors.brown,
+                      iconColor: const Color(0xFF7A4B3A),
                       subItems: [
                         _buildDrawerSubItem(Icons.home_outlined, 'Home'),
                         _buildDrawerSubItem(Icons.history, 'Booking History'),
@@ -319,6 +350,29 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                       icon: Icons.star_outline,
                       title: 'Rate our app',
                       iconColor: Colors.amber,
+                    ),
+                    const Divider(),
+                    _buildDrawerItem(
+                      icon: Icons.bug_report,
+                      title: 'Auth Test (Debug)',
+                      iconColor: Colors.purple,
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/auth-test');
+                      },
+                    ),
+                    _buildDrawerItem(
+                      icon: Icons.g_mobiledata,
+                      title: 'Google Sign-In Test',
+                      iconColor: Colors.blue,
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/google-signin-test');
+                      },
+                    ),
+                    _buildDrawerItem(
+                      icon: Icons.logout,
+                      title: 'Sign Out',
+                      iconColor: Colors.red,
+                      onTap: _signOut,
                     ),
                   ],
                 ),
@@ -369,6 +423,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     required IconData icon,
     required String title,
     required Color iconColor,
+    VoidCallback? onTap,
   }) {
     return ListTile(
       leading: Icon(icon, color: iconColor, size: 24),
@@ -381,7 +436,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         ),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-      onTap: () {},
+      onTap: onTap ?? () {},
     );
   }
 
@@ -397,12 +452,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.brown.shade700, Colors.brown.shade500],
+                colors: [const Color(0xFF7A4B3A), const Color(0xFF8B5A42)],
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.brown.withValues(alpha: 0.3),
+                  color: const Color(0xFF7A4B3A).withValues(alpha: 0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
                 ),
@@ -436,9 +491,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                       ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(
-                            0xFF703418,
-                          ), // Deep brown
+                          backgroundColor: const Color(0xFF7A4B3A),
                           foregroundColor: Colors.white,
                           elevation: 0,
                           // Inherits padding & shape from Theme
@@ -633,8 +686,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 child: Text(
                   'See more >',
                   style: TextStyle(
-                    color: const Color(0xFF703418),
-                  ), // Deep brown
+                    color: const Color(0xFF7A4B3A),
+                  ),
                 ),
               ),
             ],
@@ -755,7 +808,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 onPressed: () {},
                 child: Text(
                   'See more >',
-                  style: TextStyle(color: Colors.brown.shade700),
+                  style: TextStyle(color: const Color(0xFF7A4B3A)),
                 ),
               ),
             ],
@@ -918,7 +971,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   icon,
                   color: Color.lerp(
                     Colors.grey.shade600,
-                    Colors.brown.shade700,
+                    const Color(0xFF7A4B3A),
                     value,
                   ),
                   size: 24,
@@ -930,7 +983,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     child: Text(
                       label,
                       style: TextStyle(
-                        color: Colors.brown.shade700,
+                        color: const Color(0xFF7A4B3A),
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),

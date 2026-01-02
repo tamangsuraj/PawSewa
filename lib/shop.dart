@@ -149,7 +149,7 @@ class _ShopScreenState extends State<ShopScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -174,12 +174,19 @@ class _ShopScreenState extends State<ShopScreen> with TickerProviderStateMixin {
             ),
             onPressed: () {},
           ),
-          const Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.brown,
-              child: Icon(Icons.person, color: Colors.white, size: 20),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: const BoxDecoration(
+                color: Color(0xFF7A4B3A),
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              child: const Icon(
+                Icons.message_outlined,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
           ),
         ],
@@ -305,7 +312,7 @@ class _ShopScreenState extends State<ShopScreen> with TickerProviderStateMixin {
                         child: Icon(
                           Icons.pets,
                           size: 40, // Reduced icon size
-                          color: Colors.brown.shade300,
+                          color: const Color(0xFF7A4B3A).withOpacity(0.6),
                         ),
                       ),
                     ),
@@ -390,7 +397,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -494,7 +501,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
         ],
       ),
       child: Center(
-        child: Icon(Icons.pets, size: 120, color: Colors.brown.shade300),
+        child: Icon(Icons.pets, size: 120, color: const Color(0xFF7A4B3A).withOpacity(0.6)),
       ),
     );
   }
@@ -603,7 +610,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF703418),
+                backgroundColor: Color(0xFF7A4B3A),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
@@ -671,7 +678,7 @@ class _CartScreenState extends State<CartScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -728,7 +735,7 @@ class _CartScreenState extends State<CartScreen>
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF703418),
+                backgroundColor: const Color(0xFF7A4B3A),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
@@ -799,7 +806,7 @@ class _CartScreenState extends State<CartScreen>
               color: Colors.grey[100],
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(Icons.pets, color: Colors.brown.shade300, size: 30),
+            child: Icon(Icons.pets, color: const Color(0xFF7A4B3A).withOpacity(0.6), size: 30),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -923,7 +930,7 @@ class _CartScreenState extends State<CartScreen>
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.brown.shade700,
+                backgroundColor: const Color(0xFF7A4B3A),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
@@ -959,7 +966,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -1021,7 +1028,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 'Deliver To',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
-              Icon(Icons.edit, size: 18, color: Colors.brown.shade700),
+              Icon(Icons.edit, size: 18, color: const Color(0xFF7A4B3A)),
             ],
           ),
           const SizedBox(height: 12),
@@ -1060,9 +1067,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.brown.shade50 : Colors.grey[50],
+        color: isSelected ? const Color(0xFF7A4B3A).withOpacity(0.1) : Colors.grey[50],
         border: Border.all(
-          color: isSelected ? Colors.brown.shade700 : Colors.grey.shade300,
+          color: isSelected ? const Color(0xFF7A4B3A) : Colors.grey.shade300,
           width: isSelected ? 2 : 1,
         ),
         borderRadius: BorderRadius.circular(8),
@@ -1075,7 +1082,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.brown.shade700 : Colors.black87,
+              color: isSelected ? const Color(0xFF7A4B3A) : Colors.black87,
             ),
           ),
           const SizedBox(height: 6),
@@ -1151,10 +1158,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.brown.shade700 : Colors.grey[50],
+            color: isSelected ? const Color(0xFF7A4B3A) : Colors.grey[50],
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected ? Colors.brown.shade700 : Colors.grey.shade300,
+              color: isSelected ? const Color(0xFF7A4B3A) : Colors.grey.shade300,
             ),
           ),
           child: Column(
@@ -1189,10 +1196,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.brown.shade700 : Colors.grey[50],
+          color: isSelected ? const Color(0xFF7A4B3A) : Colors.grey[50],
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? Colors.brown.shade700 : Colors.grey.shade300,
+            color: isSelected ? const Color(0xFF7A4B3A) : Colors.grey.shade300,
           ),
         ),
         child: Text(
@@ -1379,7 +1386,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             );
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.brown.shade700,
+            backgroundColor: const Color(0xFF7A4B3A),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
@@ -1432,7 +1439,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -1525,7 +1532,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isSelected
-                      ? Colors.brown.shade700
+                      ? const Color(0xFF7A4B3A)
                       : Colors.grey.shade300,
                   width: isSelected ? 2 : 1,
                 ),
@@ -1549,7 +1556,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
                       color: isSelected
-                          ? Colors.brown.shade700
+                          ? const Color(0xFF7A4B3A)
                           : Colors.black87,
                     ),
                   ),
@@ -1580,7 +1587,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         child: ElevatedButton(
           onPressed: () => Navigator.pop(context),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.brown.shade700,
+            backgroundColor: const Color(0xFF7A4B3A),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
@@ -1655,13 +1662,13 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    color: Colors.brown.shade700,
+                    color: const Color(0xFF7A4B3A),
                     shape: BoxShape.circle,
                   ),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      Icon(Icons.star, size: 100, color: Colors.brown.shade800),
+                      Icon(Icons.star, size: 100, color: const Color(0xFF7A4B3A).withOpacity(0.8)),
                       const Icon(Icons.check, size: 60, color: Colors.white),
                     ],
                   ),

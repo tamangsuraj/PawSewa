@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'auth_service.dart';
 
 enum AuthStep {
   login,
@@ -42,20 +43,22 @@ class _AuthShellState extends State<AuthShell> {
   }
 
   Future<void> _simulateLoading(
-    Future<void> Function() action, {
-    Duration duration = const Duration(milliseconds: 1400),
-  }) async {
+    Future<void> Function() action,
+  ) async {
     if (!mounted) return;
     setState(() {
       _isLoading = true;
     });
-    await Future.delayed(duration);
-    if (!mounted) return;
-    await action();
-    if (!mounted) return;
-    setState(() {
-      _isLoading = false;
-    });
+    
+    try {
+      await action();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -98,9 +101,8 @@ class _AuthShellState extends State<AuthShell> {
           onSignupTap: () => _switchStep(AuthStep.signup),
           onForgotTap: () => _switchStep(AuthStep.forgot),
           onLoggedIn: () {
-            _simulateLoading(() async {
-              Navigator.pushReplacementNamed(context, '/home');
-            });
+            // Navigation will be handled automatically by AuthLayout
+            // No need to navigate manually
           },
         );
       case AuthStep.signup:
@@ -111,7 +113,7 @@ class _AuthShellState extends State<AuthShell> {
           onSignupStarted: (email) {
             _signupEmail = email;
             _simulateLoading(() async {
-              _switchStep(AuthStep.otpSignup);
+              _switchStep(AuthStep.success);
             });
           },
         );
@@ -123,7 +125,7 @@ class _AuthShellState extends State<AuthShell> {
           onCodeSent: (email) {
             _forgotEmail = email;
             _simulateLoading(() async {
-              _switchStep(AuthStep.otpForgot);
+              _switchStep(AuthStep.login);
             });
           },
         );
@@ -529,8 +531,17 @@ class _LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<_LoginView> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _remember = true;
   bool _showPassword = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   bool get _isValid => _formKey.currentState?.validate() ?? false;
 
@@ -549,10 +560,27 @@ class _LoginViewState extends State<_LoginView> {
     return null;
   }
 
-  void _submit() {
+  void _submit() async {
     FocusScope.of(context).unfocus();
-    if (!_isValid) return;
-    widget.onLoggedIn();
+    if (!_isValid || widget.isLoading) return;
+
+    try {
+      await authService.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+      // Navigation will be handled automatically by AuthLayout
+      widget.onLoggedIn();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -570,6 +598,7 @@ class _LoginViewState extends State<_LoginView> {
             ),
             const SizedBox(height: 28),
             TextFormField(
+              controller: _emailController,
               decoration: const InputDecoration(
                 labelText: 'Email',
                 hintText: 'you@example.com',
@@ -581,6 +610,7 @@ class _LoginViewState extends State<_LoginView> {
             ),
             const SizedBox(height: 14),
             TextFormField(
+              controller: _passwordController,
               decoration: InputDecoration(
                 labelText: 'Password',
                 hintText: '- - - - - - - - ',
@@ -678,12 +708,22 @@ class _LoginViewState extends State<_LoginView> {
               isGoogle: true,
               onPressed: widget.isLoading
                   ? null
-                  : () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Google sign-in is mocked in this UI'),
-                        ),
-                      );
+                  : () async {
+                      try {
+                        final userCredential = await authService.signInWithGoogle();
+                        if (userCredential.user != null) {
+                          widget.onLoggedIn();
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString()),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
                     },
             ),
             const SizedBox(height: 18),
@@ -734,12 +774,22 @@ class _SignupView extends StatefulWidget {
 
 class _SignupViewState extends State<_SignupView> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _showPassword = false;
   bool _showConfirmPassword = false;
   bool _agreed = false;
 
-  String _email = '';
-  String _password = '';
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   String? _validateName(String? value) {
     final v = value?.trim() ?? '';
@@ -765,7 +815,7 @@ class _SignupViewState extends State<_SignupView> {
 
   String? _validateConfirmPassword(String? value) {
     final v = value ?? '';
-    if (v != _password) return 'Passwords do not match';
+    if (v != _passwordController.text) return 'Passwords do not match';
     return null;
   }
 
@@ -774,10 +824,38 @@ class _SignupViewState extends State<_SignupView> {
     return valid && _agreed;
   }
 
-  void _submit() {
+  void _submit() async {
     FocusScope.of(context).unfocus();
-    if (!_isValid) return;
-    widget.onSignupStarted(_email.trim());
+    if (!_isValid || widget.isLoading) return;
+
+    try {
+      await authService.signUp(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+      
+      // Send email verification
+      await authService.sendEmailVerification();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account created successfully! Please verify your email.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        widget.onSignupStarted(_emailController.text.trim());
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -795,6 +873,7 @@ class _SignupViewState extends State<_SignupView> {
             ),
             const SizedBox(height: 24),
             TextFormField(
+              controller: _nameController,
               decoration: const InputDecoration(
                 labelText: 'Full name',
                 hintText: 'Alex Sharma',
@@ -805,6 +884,7 @@ class _SignupViewState extends State<_SignupView> {
             ),
             const SizedBox(height: 12),
             TextFormField(
+              controller: _emailController,
               decoration: const InputDecoration(
                 labelText: 'Email',
                 hintText: 'you@example.com',
@@ -813,10 +893,10 @@ class _SignupViewState extends State<_SignupView> {
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               validator: _validateEmail,
-              onChanged: (v) => _email = v,
             ),
             const SizedBox(height: 12),
             TextFormField(
+              controller: _passwordController,
               decoration: InputDecoration(
                 labelText: 'Password',
                 hintText: '- - - - - - - - ',
@@ -837,7 +917,6 @@ class _SignupViewState extends State<_SignupView> {
               obscureText: !_showPassword,
               textInputAction: TextInputAction.next,
               validator: _validatePassword,
-              onChanged: (v) => _password = v,
             ),
             const SizedBox(height: 6),
             Text(
@@ -848,6 +927,7 @@ class _SignupViewState extends State<_SignupView> {
             ),
             const SizedBox(height: 10),
             TextFormField(
+              controller: _confirmPasswordController,
               decoration: InputDecoration(
                 labelText: 'Confirm password',
                 hintText: '- - - - - - - - ',
@@ -942,12 +1022,32 @@ class _SignupViewState extends State<_SignupView> {
               isGoogle: true,
               onPressed: widget.isLoading
                   ? null
-                  : () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Google sign-up is mocked in this UI'),
-                        ),
-                      );
+                  : () async {
+                      try {
+                        final userCredential = await authService.signInWithGoogle();
+                        if (userCredential.user != null) {
+                          // For Google Sign-In, the user is automatically verified
+                          // Navigate to success or main screen
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Welcome ${userCredential.user!.displayName ?? 'User'}!'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            widget.onSignupStarted(userCredential.user!.email ?? '');
+                          }
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString()),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
                     },
             ),
             const SizedBox(height: 18),
@@ -998,7 +1098,13 @@ class _ForgotPasswordView extends StatefulWidget {
 
 class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
   final _formKey = GlobalKey<FormState>();
-  String _email = '';
+  final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
 
   String? _validateEmail(String? value) {
     final v = value?.trim() ?? '';
@@ -1010,10 +1116,32 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
 
   bool get _isValid => _formKey.currentState?.validate() ?? false;
 
-  void _submit() {
+  void _submit() async {
     FocusScope.of(context).unfocus();
-    if (!_isValid) return;
-    widget.onCodeSent(_email.trim());
+    if (!_isValid || widget.isLoading) return;
+
+    try {
+      await authService.sendPasswordResetEmail(email: _emailController.text.trim());
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password reset email sent! Check your inbox.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        widget.onCodeSent(_emailController.text.trim());
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -1031,6 +1159,7 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
             ),
             const SizedBox(height: 26),
             TextFormField(
+              controller: _emailController,
               decoration: const InputDecoration(
                 labelText: 'Email',
                 hintText: 'you@example.com',
@@ -1039,7 +1168,6 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.done,
               validator: _validateEmail,
-              onChanged: (v) => _email = v,
               onFieldSubmitted: (_) => _submit(),
             ),
             const SizedBox(height: 20),

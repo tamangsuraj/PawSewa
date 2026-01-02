@@ -130,10 +130,17 @@ class _HostelListingPageState extends State<HostelListingPage> {
           SizedBox(width: 12),
           Padding(
             padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              backgroundColor: Color(0xFF703418),
-              radius: 18,
-              child: Text('U', style: TextStyle(color: Colors.white)),
+            child: Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Color(0xFF7A4B3A),
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              child: Icon(
+                Icons.message_outlined,
+                color: Colors.white,
+                size: 18,
+              ),
             ),
           ),
         ],
@@ -279,7 +286,7 @@ class HostelDetailPage extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.flag, color: Color(0xFF703418), size: 20),
+                      Icon(Icons.flag, color: Color(0xFF7A4B3A), size: 20),
                       SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -306,7 +313,7 @@ class HostelDetailPage extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Color(0xFF703418),
+                      color: Color(0xFF7A4B3A),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -424,7 +431,7 @@ class HostelDetailPage extends StatelessWidget {
                           TextSpan(
                             text: 'Hostel Policies',
                             style: TextStyle(
-                              color: Color(0xFF703418),
+                              color: Color(0xFF7A4B3A),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -475,7 +482,7 @@ class BookingPage extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.flag, color: Color(0xFF703418), size: 20),
+                      Icon(Icons.flag, color: Color(0xFF7A4B3A), size: 20),
                       SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -502,7 +509,7 @@ class BookingPage extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Color(0xFF703418),
+                      color: Color(0xFF7A4B3A),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -575,7 +582,7 @@ class BookingPage extends StatelessWidget {
                   Text(
                     'View all amenities',
                     style: TextStyle(
-                      color: Color(0xFF703418),
+                      color: Color(0xFF7A4B3A),
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -675,7 +682,7 @@ class BookingPage extends StatelessWidget {
                           TextSpan(
                             text: 'Hostel Policies',
                             style: TextStyle(
-                              color: Color(0xFF703418),
+                              color: Color(0xFF7A4B3A),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -727,7 +734,7 @@ class PricingPage extends StatelessWidget {
             SizedBox(height: 16),
             Row(
               children: [
-                Icon(Icons.local_offer, color: Color(0xFF703418), size: 20),
+                Icon(Icons.local_offer, color: Color(0xFF7A4B3A), size: 20),
                 SizedBox(width: 12),
                 Text('Apply Coupon', style: TextStyle(fontSize: 14)),
                 Spacer(),
@@ -738,7 +745,7 @@ class PricingPage extends StatelessWidget {
             Text(
               'More Offers',
               style: TextStyle(
-                color: Color(0xFF703418),
+                color: Color(0xFF7A4B3A),
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),
@@ -888,7 +895,7 @@ class ConfirmationPage extends StatelessWidget {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: Color(0xFF703418),
+                color: Color(0xFF7A4B3A),
                 shape: BoxShape.circle,
               ),
               child: Center(

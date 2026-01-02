@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'login.dart';
+import 'auth_layout.dart';
 
 class SplashWrapper extends StatefulWidget {
   const SplashWrapper({super.key});
@@ -26,15 +26,16 @@ class _SplashWrapperState extends State<SplashWrapper>
     // 0–1500 ms : white only
     // 1500–3500 ms : logo + lottie visible (with pop-in, loading held longer)
     // 3500–6000 ms : brown wipe + login sliding together
-    _controller =
-        AnimationController(
-          vsync: this,
-          duration: const Duration(milliseconds: 6000),
-        )..addStatusListener((status) {
-          if (status == AnimationStatus.completed) {
-            Navigator.of(context).pushReplacementNamed('/login');
-          }
-        });
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 6000),
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const AuthLayout()),
+          );
+        }
+      });
 
     // Logo pop from 1.5–1.9 s  -> 1.5/6=0.25, 1.9/6≈0.317
     _logoScale = Tween<double>(begin: 0.7, end: 1.0).animate(
@@ -67,24 +68,23 @@ class _SplashWrapperState extends State<SplashWrapper>
     );
 
     // Brown + login slide 3.5–6 s -> 3.5/6≈0.583 (unchanged)
-    _brownSlide =
-        Tween<Offset>(
-          begin: const Offset(1.0, 0.0), // off-screen right
-          end: const Offset(-1.0, 0.0), // off-screen left
-        ).animate(
-          CurvedAnimation(
-            parent: _controller,
-            curve: const Interval(0.583, 1.0, curve: Curves.easeInOutCubic),
-          ),
-        );
+    _brownSlide = Tween<Offset>(
+      begin: const Offset(1.0, 0.0), // off-screen right
+      end: const Offset(-1.0, 0.0), // off-screen left
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.583, 1.0, curve: Curves.easeInOutCubic),
+      ),
+    );
 
     _loginSlide = Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero)
         .animate(
-          CurvedAnimation(
-            parent: _controller,
-            curve: const Interval(0.583, 1.0, curve: Curves.easeInOutCubic),
-          ),
-        );
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.583, 1.0, curve: Curves.easeInOutCubic),
+      ),
+    );
 
     _controller.forward();
   }
@@ -95,7 +95,7 @@ class _SplashWrapperState extends State<SplashWrapper>
     super.dispose();
   }
 
-  Color get _brown => const Color(0xFF703418);
+  Color get _brown => const Color(0xFF7A4B3A);
 
   @override
   Widget build(BuildContext context) {
@@ -109,11 +109,11 @@ class _SplashWrapperState extends State<SplashWrapper>
 
           return Stack(
             children: [
-              // 1) Login screen sliding in from right (attached to brown)
+              // 1) AuthLayout sliding in from right (attached to brown)
               if (t >= 0.583)
                 SlideTransition(
                   position: _loginSlide,
-                  child: const AuthShell(initialStep: AuthStep.login),
+                  child: const AuthLayout(),
                 ),
 
               // 2) Logo / loading screen – now also visible under the brown wipe

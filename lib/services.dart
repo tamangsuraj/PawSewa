@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const Color primaryBrown = Color(0xFF703418);
+const Color primaryBrown = Color(0xFF7A4B3A);
 
 class ServicesShell extends StatefulWidget {
   const ServicesShell({super.key});
@@ -37,7 +37,7 @@ class _ServicesShellState extends State<ServicesShell>
           setState(() => _currentIndex = i);
         },
         backgroundColor: const Color(0xFFF7F1EA),
-        indicatorColor: const Color(0x1A703418),
+        indicatorColor: const Color(0x1A7A4B3A),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -250,7 +250,7 @@ class _ServicesHomeScreenState extends State<ServicesHomeScreen>
                       ],
                     ),
                     child: const Icon(
-                      Icons.sms_rounded,
+                      Icons.message_outlined,
                       size: 22,
                       color: primaryBrown,
                     ),
