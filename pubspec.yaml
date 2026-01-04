@@ -38,7 +38,8 @@ dependencies:
   lottie: ^3.3.2
   firebase_core: ^4.3.0
   firebase_auth: ^6.1.3
-  google_sign_in: ^6.2.1 
+  google_sign_in: ^6.2.1
+  shared_preferences: ^2.3.2 
 
 dev_dependencies:
   flutter_test:
@@ -50,7 +51,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-  flutter_native_splash: ^2.4.7
+  # flutter_native_splash: ^2.4.7  # Disabled due to SDK compatibility issues
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -64,4 +65,9 @@ flutter:
     - assets/animations/walking.json
     - assets/images/
     - assets/logo/
+    - assets/foodimages/
+    - assets/medicineimages/
+    - assets/groomingimages/
+    - assets/essentialsimages/
+    - assets/accessoriesimages/
   

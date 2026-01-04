@@ -36,7 +36,7 @@ class _ServicesShellState extends State<ServicesShell>
         onDestinationSelected: (i) {
           setState(() => _currentIndex = i);
         },
-        backgroundColor: const Color(0xFFF7F1EA),
+        backgroundColor: Colors.white,
         indicatorColor: const Color(0x1A7A4B3A),
         destinations: const [
           NavigationDestination(
@@ -90,7 +90,9 @@ class _PlaceholderScreen extends StatelessWidget {
 /// SERVICES HOME SCREEN
 
 class ServicesHomeScreen extends StatefulWidget {
-  const ServicesHomeScreen({super.key});
+  final VoidCallback? onMenuPressed;
+
+  const ServicesHomeScreen({super.key, this.onMenuPressed});
 
   @override
   State<ServicesHomeScreen> createState() => _ServicesHomeScreenState();
@@ -212,7 +214,13 @@ class _ServicesHomeScreenState extends State<ServicesHomeScreen>
         elevation: 0,
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
-        titleSpacing: 16,
+        titleSpacing: 0,
+        leading: widget.onMenuPressed != null
+            ? IconButton(
+                icon: const Icon(Icons.menu, color: Colors.black87),
+                onPressed: widget.onMenuPressed,
+              )
+            : null,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -239,11 +247,11 @@ class _ServicesHomeScreenState extends State<ServicesHomeScreen>
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -275,13 +283,7 @@ class _ServicesHomeScreenState extends State<ServicesHomeScreen>
         ],
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFFF8F0), Color(0xFFF7F1EA)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color: Colors.white,
         child: SafeArea(
           top: false,
           child: CustomScrollView(
@@ -416,7 +418,7 @@ class _QuickActionsStrip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.6),
+        color: Colors.white.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(20),
       ),
       child: SingleChildScrollView(
@@ -438,7 +440,9 @@ class _QuickActionsStrip extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFF5E9),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: primaryBrown.withOpacity(0.12)),
+                    border: Border.all(
+                      color: primaryBrown.withValues(alpha: 0.12),
+                    ),
                   ),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(20),
@@ -602,7 +606,7 @@ class _ServiceCard extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 18,
                     offset: const Offset(0, 8),
                   ),
@@ -625,6 +629,8 @@ class _ServiceCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       data.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.brown.shade400,
                       ),
@@ -720,7 +726,7 @@ class _VaccinationSkeletonList extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             borderRadius: BorderRadius.circular(18),
           ),
           child: Row(
@@ -867,7 +873,7 @@ class _VaccinationReminderCardState extends State<_VaccinationReminderCard>
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 14,
                 offset: const Offset(0, 6),
               ),
@@ -1038,7 +1044,7 @@ class _VaccinationEmptyState extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
+        color: Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -1086,13 +1092,7 @@ class VaccinationDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('${reminder.petName} • Vaccines')),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFFF8F0), Color(0xFFF7F1EA)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color: Colors.white,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -1134,9 +1134,9 @@ class VaccinationDetailsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: primaryBrown.withOpacity(0.12)),
+                border: Border.all(color: primaryBrown.withValues(alpha: 0.12)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1190,7 +1190,7 @@ class VaccinationDetailsScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Text(
@@ -1387,13 +1387,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen>
     if (showSuccess) {
       return Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFFFF3E5), Color(0xFFF7F1EA)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
+          color: Colors.white,
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -1407,7 +1401,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen>
                       color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
+                          color: Colors.black.withValues(alpha: 0.08),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -1454,13 +1448,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen>
     return Scaffold(
       appBar: AppBar(title: const Text('Book appointment')),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFFF8F0), Color(0xFFF7F1EA)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color: Colors.white,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -1505,12 +1493,12 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen>
                           border: Border.all(
                             color: selected
                                 ? primaryBrown
-                                : Colors.grey.withOpacity(0.18),
+                                : Colors.grey.withValues(alpha: 0.18),
                           ),
                           boxShadow: [
                             if (selected)
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
+                                color: Colors.black.withValues(alpha: 0.08),
                                 blurRadius: 16,
                                 offset: const Offset(0, 8),
                               ),
@@ -1581,12 +1569,12 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen>
                         decoration: BoxDecoration(
                           color: selected
                               ? primaryBrown
-                              : Colors.white.withOpacity(0.9),
+                              : Colors.white.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
                             color: selected
                                 ? primaryBrown
-                                : Colors.grey.withOpacity(0.2),
+                                : Colors.grey.withValues(alpha: 0.2),
                           ),
                         ),
                         child: Column(
@@ -1737,14 +1725,17 @@ class _StepLabel extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         if (icon != null) ...[
-          Icon(icon, size: 20, color: primaryBrown.withOpacity(0.7)),
+          Icon(icon, size: 20, color: primaryBrown.withValues(alpha: 0.7)),
           const SizedBox(width: 6),
         ],
-        Text(
-          label,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontSize: 16),
+        Flexible(
+          child: Text(
+            label,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontSize: 16),
+          ),
         ),
       ],
     );
@@ -1764,7 +1755,7 @@ class _PeriodTabs extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(20),
       ),
       padding: const EdgeInsets.all(4),
@@ -1835,7 +1826,7 @@ class _VisitTypeSelector extends StatelessWidget {
               border: Border.all(
                 color: isSelected
                     ? primaryBrown
-                    : Colors.grey.withOpacity(0.15),
+                    : Colors.grey.withValues(alpha: 0.15),
               ),
             ),
             child: Row(
@@ -1930,7 +1921,7 @@ class _VetAssignmentInfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFFFF6EC),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: primaryBrown.withOpacity(0.2)),
+        border: Border.all(color: primaryBrown.withValues(alpha: 0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2018,13 +2009,7 @@ class ClinicsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Clinics near me')),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFFF8F0), Color(0xFFF7F1EA)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        color: Colors.white,
         child: hasClinics
             ? ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -2065,7 +2050,7 @@ class _ClinicCard extends StatelessWidget {
     final isOpen = clinic.isOpen;
     final statusColor = isOpen
         ? const Color(0xFF4CAF8A)
-        : Colors.grey.withOpacity(0.7);
+        : Colors.grey.withValues(alpha: 0.7);
     final statusText = isOpen ? 'Open now' : 'Closed';
 
     return _AnimatedTapScale(
@@ -2075,11 +2060,11 @@ class _ClinicCard extends StatelessWidget {
         child: Ink(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 14,
                 offset: const Offset(0, 6),
               ),
@@ -2106,6 +2091,8 @@ class _ClinicCard extends StatelessWidget {
                   children: [
                     Text(
                       clinic.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -2113,6 +2100,8 @@ class _ClinicCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       '${clinic.distanceKm.toStringAsFixed(1)} km away • ${clinic.address}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.brown.shade500,
                       ),
@@ -2126,7 +2115,7 @@ class _ClinicCard extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.12),
+                            color: statusColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
@@ -2283,7 +2272,7 @@ class _AppointmentCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 14,
                 offset: const Offset(0, 6),
               ),
@@ -2309,6 +2298,8 @@ class _AppointmentCard extends StatelessWidget {
                   children: [
                     Text(
                       appointment.petName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -2345,10 +2336,14 @@ class _AppointmentCard extends StatelessWidget {
                           color: Colors.brown,
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          visitInfo,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: Colors.brown.shade500),
+                        Flexible(
+                          child: Text(
+                            visitInfo,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: Colors.brown.shade500),
+                          ),
                         ),
                       ],
                     ),
@@ -2425,7 +2420,7 @@ class _AppointmentsEmptyState extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.85),
+        color: Colors.white.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -2473,13 +2468,7 @@ class AppointmentDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Appointment details')),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFFF3E5), Color(0xFFF7F1EA)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color: Colors.white,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -2562,9 +2551,9 @@ class AppointmentDetailsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.95),
+                color: Colors.white.withValues(alpha: 0.95),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: primaryBrown.withOpacity(0.12)),
+                border: Border.all(color: primaryBrown.withValues(alpha: 0.12)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -2636,13 +2625,21 @@ class _ServicesSummaryStrip extends StatelessWidget {
         child: Ink(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.85),
+            color: Colors.white.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: primaryBrown.withOpacity(0.16)),
+            border: Border.all(color: primaryBrown.withValues(alpha: 0.16)),
           ),
           child: Row(
             children: [
-              const Icon(Icons.pets_rounded, color: primaryBrown),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  'assets/logo/main_logo.png',
+                  width: 24,
+                  height: 24,
+                  fit: BoxFit.cover,
+                ),
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -2650,6 +2647,8 @@ class _ServicesSummaryStrip extends StatelessWidget {
                   children: [
                     Text(
                       'Next vaccine: Rabies booster',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: primaryBrown,
@@ -2658,6 +2657,8 @@ class _ServicesSummaryStrip extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       'In 3 days • Tap to see details and full schedule.',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.brown.shade500,
                       ),
@@ -2708,7 +2709,7 @@ class _HelpInfoSection extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
@@ -2906,7 +2907,7 @@ class _SectionHeader extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: primaryBrown.withOpacity(0.08),
+              color: primaryBrown.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, size: 20, color: primaryBrown),
@@ -3101,7 +3102,7 @@ class _SkeletonBox extends StatelessWidget {
       width: width == double.infinity ? null : width,
       height: height,
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.16),
+        color: Colors.grey.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -3146,7 +3147,7 @@ class _TimelineTile extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.95),
+              color: Colors.white.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -3188,13 +3189,7 @@ class VaccinationRemindersScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Vaccination reminders')),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFFF8F0), Color(0xFFF7F1EA)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color: Colors.white,
         child: hasReminders
             ? ListView.builder(
                 padding: const EdgeInsets.all(16),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'shop.dart';
 import 'auth_service.dart';
+import 'upgradetopro.dart';
 
 import 'pet_hostel.dart';
 import 'services.dart';
@@ -14,6 +15,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   int _selectedIndex = 0;
+  String? _selectedShopCategory;
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late AnimationController _drawerController;
@@ -64,6 +66,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
     _fadeController.forward();
     _slideController.forward();
+    
+    // Show premium banner after a delay
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (mounted) {
+        showPremiumBannerIfNeeded(context);
+      }
+    });
   }
 
   @override
@@ -109,11 +118,16 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         children: [
           SafeArea(
             child: _selectedIndex == 1
-                ? const ServicesHomeScreen()
+                ? ServicesHomeScreen(onMenuPressed: _toggleDrawer)
                 : _selectedIndex == 2
-                ? const ShopScreen()
+                ? PawSewaShopScreen(
+                    onMenuPressed: _toggleDrawer,
+                    initialCategory: _selectedShopCategory,
+                  )
+                : _selectedIndex == 3
+                ? HostelListingPage(onMenuPressed: _toggleDrawer)
                 : _selectedIndex == 4
-                ? const HostelListingPage()
+                ? _buildPetProfilesScreen()
                 : FadeTransition(
                     opacity: _fadeAnimation,
                     child: SlideTransition(
@@ -153,8 +167,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildPromoBanner(),
-                const SizedBox(height: 24),
-                _buildSearchBar(),
                 const SizedBox(height: 24),
                 _buildQuickServices(),
                 const SizedBox(height: 32),
@@ -502,61 +514,20 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Image.network(
-                  'https://placeholder.com/100x100',
-                  width: 90,
-                  height: 85,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: 90,
-                      height: 85,
-                      decoration: BoxDecoration(
-                        color: Colors.brown.shade300,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.pets,
-                        size: 35,
-                        color: Colors.white,
-                      ),
-                    );
-                  },
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    'assets/logo/main_logo.png',
+                    width: 90,
+                    height: 85,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ],
             ),
           ),
         );
       },
-    );
-  }
-
-  Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: const TextField(
-          decoration: InputDecoration(
-            hintText: 'Search for tips or services...',
-            border: InputBorder.none,
-            icon: Icon(Icons.search, color: Colors.grey),
-            hintStyle: TextStyle(color: Colors.grey),
-            contentPadding: EdgeInsets.symmetric(vertical: 14),
-          ),
-        ),
-      ),
     );
   }
 
@@ -568,16 +539,29 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         'color': Colors.pink,
       },
       {'icon': Icons.hotel, 'label': 'Hostel', 'color': Colors.orange},
-      {'icon': Icons.lightbulb_outline, 'label': 'Tips', 'color': Colors.blue},
-      {'icon': Icons.restaurant, 'label': 'Food', 'color': Colors.yellow},
+      {'icon': Icons.vaccines, 'label': 'Vaccinations', 'color': Colors.blue},
+      {'icon': Icons.event_note, 'label': 'Appointments', 'color': Colors.green},
+      {'icon': Icons.local_hospital, 'label': 'Clinics', 'color': Colors.red},
     ];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 14),
-          child: Text(
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAF8F5),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
             'Quick Services',
             style: TextStyle(
               fontSize: 16,
@@ -585,11 +569,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               color: Colors.black87,
             ),
           ),
-        ),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Row(
+          const SizedBox(height: 16),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: services.asMap().entries.map((entry) {
               int idx = entry.key;
@@ -617,8 +598,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               );
             }).toList(),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -633,22 +614,27 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       child: Column(
         children: [
           Container(
-            width: 56,
-            height: 56,
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, color: color, size: 26),
+            child: Icon(icon, color: color, size: 24),
           ),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
+          const SizedBox(height: 8),
+          SizedBox(
+            width: 60,
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
             ),
           ),
         ],
@@ -657,20 +643,33 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildRecommendedSection() {
-    final products = [
-      {'name': 'Milkbone', 'price': 'Rs. 700', 'color': Colors.red},
-      {'name': 'Himal Treats', 'price': 'Rs. 200', 'color': Colors.teal},
-      {'name': 'Pup-peroni', 'price': 'Rs. 400', 'color': Colors.orange},
-      {'name': 'Dog chew toy', 'price': 'Rs. 600', 'color': Colors.blue},
-      {'name': 'Pet Shampoo', 'price': 'Rs. 350', 'color': Colors.purple},
+    // Shop categories with custom images
+    final categories = [
+      {'id': 'petFood', 'label': 'Pet Food', 'image': 'assets/images/petfooddisplay.png'},
+      {'id': 'medicines', 'label': 'Medicines', 'image': 'assets/images/petmedicinedisplay.png'},
+      {'id': 'grooming', 'label': 'Grooming', 'image': 'assets/images/petgroomingdisplay.png'},
+      {'id': 'accessories', 'label': 'Accessories', 'image': 'assets/images/petaccessoriesdisplay.png'},
+      {'id': 'essentials', 'label': 'Essentials', 'image': 'assets/images/petessentialsdisplay.png'},
     ];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAF8F5),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
@@ -682,104 +681,77 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    _selectedIndex = 2; // Navigate to Shop
+                  });
+                },
                 child: Text(
                   'See more >',
-                  style: TextStyle(
-                    color: const Color(0xFF7A4B3A),
-                  ),
+                  style: TextStyle(color: const Color(0xFF7A4B3A)),
                 ),
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 160,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: products.length,
-            // Calculate width to show 4.5 items dynamically if needed, or fixed width that fits roughly 2.5 on mobile
-            // User requested 4.5 items. Detailed math: Screen width / 4.5 - padding.
-            // Simplified: Just use a smaller fixed width.
-            itemBuilder: (context, index) {
-              return TweenAnimationBuilder<double>(
-                duration: Duration(milliseconds: 600 + (index * 100)),
-                tween: Tween(begin: 0.0, end: 1.0),
-                builder: (context, value, child) {
-                  return Opacity(
-                    opacity: value,
-                    child: Transform.translate(
-                      offset: Offset(50 * (1 - value), 0),
-                      child: _buildProductCard(
-                        products[index]['name'] as String,
-                        products[index]['price'] as String,
-                        products[index]['color'] as Color,
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 90,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              itemCount: categories.length,
+              separatorBuilder: (context, index) => const SizedBox(width: 16),
+              itemBuilder: (context, index) {
+                final category = categories[index];
+                return TweenAnimationBuilder<double>(
+                  duration: Duration(milliseconds: 400 + (index * 100)),
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedShopCategory = category['id'] as String;
+                            _selectedIndex = 2; // Navigate to Shop
+                          });
+                        },
+                        child: SizedBox(
+                          width: 65,
+                          child: Column(
+                            children: [
+                              ClipOval(
+                                child: Container(
+                                  width: 55,
+                                  height: 55,
+                                  child: Image.asset(
+                                    category['image'] as String,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Flexible(
+                                child: Text(
+                                  category['label'] as String,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProductCard(String name, String price, Color color) {
-    return Container(
-      width: 85, // Reduced width to fit 4.5 items
-      margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.15),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // Left aligned
-        children: [
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.2),
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(12),
-                ),
-              ),
-              child: Icon(Icons.pets, color: color, size: 28),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  price,
-                  style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
-                ),
-              ],
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],
@@ -844,11 +816,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                           child: Container(
                             height: 180,
                             color: Colors.brown.shade200,
-                            child: const Center(
-                              child: Icon(
-                                Icons.pets,
-                                size: 60,
-                                color: Colors.white,
+                            child: Center(
+                              child: Image.asset(
+                                'assets/logo/main_logo.png',
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.contain,
                               ),
                             ),
                           ),
@@ -934,12 +907,126 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               _buildNavItem(Icons.home, 'Home', 0),
               _buildNavItem(Icons.medical_services_outlined, 'Services', 1),
               _buildNavItem(Icons.shopping_bag_outlined, 'Shop', 2),
-              _buildNavItem(Icons.favorite_outline, 'Saved', 3),
-              _buildNavItem(Icons.hotel, 'Hostel', 4),
+              _buildNavItem(Icons.hotel, 'Hostel', 3),
+              _buildNavItem(Icons.pets, 'Profiles', 4),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPetProfilesScreen() {
+    return Column(
+      children: [
+        // App Bar
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.menu, color: Colors.black87),
+                onPressed: _toggleDrawer,
+              ),
+              const Text(
+                'Pet Profiles',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.add, color: Colors.black87),
+                    onPressed: () {
+                      // Add new pet profile
+                    },
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF7A4B3A),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.message_outlined,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        // Content
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF7A4B3A).withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Image.asset(
+                      'assets/logo/main_logo.png',
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'No Pet Profiles Yet',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Add your furry friends to keep track\nof their health and activities',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Add new pet
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add Pet Profile'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF7A4B3A),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 

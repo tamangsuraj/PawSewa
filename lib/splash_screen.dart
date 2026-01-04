@@ -26,16 +26,17 @@ class _SplashWrapperState extends State<SplashWrapper>
     // 0–1500 ms : white only
     // 1500–3500 ms : logo + lottie visible (with pop-in, loading held longer)
     // 3500–6000 ms : brown wipe + login sliding together
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 6000),
-    )..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const AuthLayout()),
-          );
-        }
-      });
+    _controller =
+        AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 6000),
+        )..addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const AuthLayout()),
+            );
+          }
+        });
 
     // Logo pop from 1.5–1.9 s  -> 1.5/6=0.25, 1.9/6≈0.317
     _logoScale = Tween<double>(begin: 0.7, end: 1.0).animate(
@@ -68,23 +69,24 @@ class _SplashWrapperState extends State<SplashWrapper>
     );
 
     // Brown + login slide 3.5–6 s -> 3.5/6≈0.583 (unchanged)
-    _brownSlide = Tween<Offset>(
-      begin: const Offset(1.0, 0.0), // off-screen right
-      end: const Offset(-1.0, 0.0), // off-screen left
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.583, 1.0, curve: Curves.easeInOutCubic),
-      ),
-    );
+    _brownSlide =
+        Tween<Offset>(
+          begin: const Offset(1.0, 0.0), // off-screen right
+          end: const Offset(-1.0, 0.0), // off-screen left
+        ).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.583, 1.0, curve: Curves.easeInOutCubic),
+          ),
+        );
 
     _loginSlide = Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero)
         .animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.583, 1.0, curve: Curves.easeInOutCubic),
-      ),
-    );
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.583, 1.0, curve: Curves.easeInOutCubic),
+          ),
+        );
 
     _controller.forward();
   }
@@ -143,7 +145,7 @@ class _SplashWrapperState extends State<SplashWrapper>
                                     : (t < 0.317 ? _logoScale.value : 1.0),
                                 child: Image.asset(
                                   'assets/logo/logo.png',
-                                  width: size.width * 0.35, // was 0.4
+                                  width: size.width * 0.49,
                                 ),
                               ),
                             ),
@@ -158,7 +160,7 @@ class _SplashWrapperState extends State<SplashWrapper>
                                     ? 0.7
                                     : (t < 0.383 ? _loadingScale.value : 1.0),
                                 child: SizedBox(
-                                  height: 30,
+                                  height: 20,
                                   child: Lottie.asset(
                                     'assets/animations/loading.json',
                                     repeat: true,

@@ -200,14 +200,14 @@ class _AuthBackground extends StatelessWidget {
         Positioned(
           top: -80,
           right: -40,
-          child: _BlurCircle(size: 220, color: primary.withOpacity(0.12)),
+          child: _BlurCircle(size: 220, color: primary.withValues(alpha: 0.12)),
         ),
         Positioned(
           bottom: -60,
           left: -40,
           child: _BlurCircle(
             size: 200,
-            color: const Color(0xFFB37A4D).withOpacity(0.18),
+            color: const Color(0xFFB37A4D).withValues(alpha: 0.18),
           ),
         ),
         Positioned(
@@ -215,7 +215,12 @@ class _AuthBackground extends StatelessWidget {
           right: 30,
           child: Opacity(
             opacity: 0.13,
-            child: Icon(Icons.pets_rounded, size: 96, color: primary),
+            child: Image.asset(
+              'assets/logo/main_logo.png',
+              width: 96,
+              height: 96,
+              fit: BoxFit.contain,
+            ),
           ),
         ),
         Center(
@@ -259,14 +264,14 @@ class _BrandHeader extends StatelessWidget {
       children: [
         Row(
           children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: primary.withOpacity(0.12),
-                shape: BoxShape.circle,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(21),
+              child: Image.asset(
+                'assets/logo/main_logo.png',
+                width: 42,
+                height: 42,
+                fit: BoxFit.cover,
               ),
-              child: Icon(Icons.pets_rounded, color: primary, size: 24),
             ),
             const SizedBox(width: 12),
             Column(
@@ -323,11 +328,11 @@ class _AuthCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.94),
+            color: Colors.white.withValues(alpha: 0.94),
             borderRadius: BorderRadius.circular(26),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 26,
                 offset: const Offset(0, 12),
               ),
@@ -414,14 +419,14 @@ class _PrimaryButtonState extends State<_PrimaryButton>
           height: 52,
           decoration: BoxDecoration(
             color: isDisabled
-                ? colorScheme.primary.withOpacity(0.35)
+                ? colorScheme.primary.withValues(alpha: 0.35)
                 : colorScheme.primary,
             borderRadius: BorderRadius.circular(20),
             boxShadow: isDisabled
                 ? null
                 : [
                     BoxShadow(
-                      color: colorScheme.primary.withOpacity(0.28),
+                      color: colorScheme.primary.withValues(alpha: 0.28),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -478,7 +483,7 @@ class _SecondaryButton extends StatelessWidget {
         ),
         style: OutlinedButton.styleFrom(
           side: BorderSide(
-            color: colorScheme.primary.withOpacity(0.28),
+            color: colorScheme.primary.withValues(alpha: 0.28),
             width: 1.1,
           ),
           shape: RoundedRectangleBorder(
@@ -654,7 +659,7 @@ class _LoginViewState extends State<_LoginView> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   side: BorderSide(
-                    color: const Color(0xFFB8A18B).withOpacity(0.9),
+                    color: const Color(0xFFB8A18B).withValues(alpha: 0.9),
                   ),
                   activeColor: Theme.of(context).colorScheme.primary,
                 ),
@@ -964,7 +969,7 @@ class _SignupViewState extends State<_SignupView> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   side: BorderSide(
-                    color: const Color(0xFFB8A18B).withOpacity(0.9),
+                    color: const Color(0xFFB8A18B).withValues(alpha: 0.9),
                   ),
                   activeColor: Theme.of(context).colorScheme.primary,
                 ),
@@ -1673,7 +1678,7 @@ class _SuccessViewState extends State<_SuccessView>
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
                     colors: [
-                      Theme.of(context).colorScheme.primary.withOpacity(0.95),
+                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.95),
                       const Color(0xFFB37A4D),
                     ],
                   ),
@@ -1681,7 +1686,7 @@ class _SuccessViewState extends State<_SuccessView>
                     BoxShadow(
                       color: Theme.of(
                         context,
-                      ).colorScheme.primary.withOpacity(0.4),
+                      ).colorScheme.primary.withValues(alpha: 0.4),
                       blurRadius: 26,
                       offset: const Offset(0, 12),
                     ),

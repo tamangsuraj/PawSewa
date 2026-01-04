@@ -37,10 +37,10 @@ class AuthService {
         email: email,
         password: password,
       );
-      
+
       // Automatically send email verification after signup
       await sendEmailVerification();
-      
+
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
@@ -59,7 +59,7 @@ class AuthService {
         email: email,
         password: password,
       );
-      
+
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
@@ -72,10 +72,7 @@ class AuthService {
   Future<void> signOut() async {
     try {
       // Sign out from both Firebase and Google
-      await Future.wait([
-        _auth.signOut(),
-        _googleSignIn.signOut(),
-      ]);
+      await Future.wait([_auth.signOut(), _googleSignIn.signOut()]);
     } catch (e) {
       throw 'Failed to sign out. Please try again.';
     }
@@ -84,15 +81,24 @@ class AuthService {
   // Google Sign-In
   Future<UserCredential> signInWithGoogle() async {
     try {
+      // Sign out first to ensure fresh authentication
+      await _googleSignIn.signOut();
+
       // Trigger the Google Sign-In flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      
+
       if (googleUser == null) {
         throw 'Google Sign-In was cancelled by user';
       }
 
       // Obtain the authentication credentials
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // Verify we got the tokens
+      if (googleAuth.accessToken == null || googleAuth.idToken == null) {
+        throw 'Failed to get authentication tokens from Google';
+      }
 
       // Create a new credential for Firebase Authentication
       final OAuthCredential credential = GoogleAuthProvider.credential(
@@ -101,15 +107,47 @@ class AuthService {
       );
 
       // Sign-in with Firebase using the Google credentials
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
+      // Log Firebase auth errors
+      print('🔥 FirebaseAuthException: ${e.code} - ${e.message}');
       throw _handleAuthException(e);
     } catch (e) {
+      // Enhanced error logging for debugging
+      print('❌ Google Sign-In Error: ${e.toString()}');
+      print('Error type: ${e.runtimeType}');
+
+      // Handle specific error cases
       if (e.toString().contains('cancelled')) {
         throw 'Google Sign-In was cancelled';
       }
+
+      // Detect ApiException: 10 (DEVELOPER_ERROR)
+      if (e.toString().contains('ApiException: 10') ||
+          e.toString().contains('DEVELOPER_ERROR')) {
+        throw 'Google Sign-In failed: OAuth client not configured.\n\n'
+            'Please check:\n'
+            '1. SHA-1 and SHA-256 added to Firebase\n'
+            '2. OAuth Client IDs created in Google Cloud Console\n'
+            '3. Web Client ID added to Firebase Authentication\n'
+            '4. google-services.json re-downloaded\n\n'
+            'See GOOGLE_SIGNIN_FIX_GUIDE.md for details.';
+      }
+
+      // Detect ApiException: 7 (NETWORK_ERROR)
+      if (e.toString().contains('ApiException: 7')) {
+        throw 'Network error. Please check your internet connection.';
+      }
+
+      // Detect ApiException: 12500 (SIGN_IN_CANCELLED)
+      if (e.toString().contains('ApiException: 12500')) {
+        throw 'Google Sign-In was cancelled';
+      }
+
       throw 'Google Sign-In failed: ${e.toString()}';
     }
   }
@@ -155,10 +193,7 @@ class AuthService {
     required String newPassword,
   }) async {
     try {
-      await _auth.confirmPasswordReset(
-        code: code,
-        newPassword: newPassword,
-      );
+      await _auth.confirmPasswordReset(code: code, newPassword: newPassword);
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
@@ -243,7 +278,8 @@ class AuthService {
       case 'network-request-failed':
         return 'Network error. Please check your connection and try again.';
       default:
-        return e.message ?? 'An authentication error occurred. Please try again.';
+        return e.message ??
+            'An authentication error occurred. Please try again.';
     }
   }
 }
