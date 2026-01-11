@@ -5,8 +5,7 @@ import 'splash_screen.dart';
 import 'login.dart';
 import 'services.dart';
 import 'auth_layout.dart';
-import 'auth_test_screen.dart';
-import 'google_signin_test_screen.dart';
+// Routes for test screens removed
 import 'upgradetopro.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -14,10 +13,10 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
+
   // Initialize Premium Service
   await PremiumStateService().initialize();
-  
+
   runApp(const PetStoreApp());
 }
 
@@ -99,8 +98,6 @@ class PetStoreApp extends StatelessWidget {
         '/booking': (context) => BookingPage(),
         '/pricing': (context) => PricingPage(),
         '/confirmation': (context) => ConfirmationPage(),
-        '/auth-test': (context) => const AuthTestScreen(),
-        '/google-signin-test': (context) => const GoogleSignInTestScreen(),
       },
     );
   }
